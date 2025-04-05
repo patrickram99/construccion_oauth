@@ -8,7 +8,7 @@ import os
 app = Flask(__name__)
 
 # URL de la base de datos (configurar en el entorno o reemplazar directamente)
-DATABASE_URL = "postgresql://productos_qwwy_user:HNKhUBu4DxDyhCLqFjzWN6Bin4lAl8JO@dpg-cvjvc2pr0fns739kpa1g-a.oregon-postgres.render.com/productos_qwwy"
+DATABASE_URL = "XDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD"
 
 # La misma clave secreta que el servidor de autenticación
 JWT_SECRET = "mi_clave_super_secreta"
