@@ -1,6 +1,8 @@
 from flask import Blueprint, request, jsonify
 from backend.models.postgresql_autor_model import AutorModel
 from backend.models.libro_autor_model import LibroAutorModel
+from functools import wraps
+
 
 autor_blueprint = Blueprint('autor_blueprint', __name__)
 autor_model = AutorModel()
