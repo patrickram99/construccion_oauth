@@ -1,4 +1,5 @@
 from flask import Flask
+from flask_cors import CORS
 from dotenv import load_dotenv
 import os
 from blueprints.libro_blueprint import libro_bp
@@ -11,7 +12,8 @@ load_dotenv()
 def create_app():
     app = Flask(__name__)
     
-    # Register blueprints
+    CORS(app, resources={r"/api/*": {"origins": "http://localhost:3000"}})
+
     app.register_blueprint(libro_bp, url_prefix='/api/libros')
     app.register_blueprint(autor_bp, url_prefix='/api/autores')
     app.register_blueprint(genero_bp, url_prefix='/api/generos')

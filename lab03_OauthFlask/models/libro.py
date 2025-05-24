@@ -235,3 +235,127 @@ class Libro:
                 cursor.close()
             if conn and pool:
                 pool.release_connection(conn)
+
+    @staticmethod
+    def get_by_genero(genero_id):
+        """
+        Obtiene todos los libros de un género específico
+        """
+        pool = None
+        conn = None
+        cursor = None
+        
+        try:
+            pool = PostgreSQLConnectionPool.get_instance()
+            conn = pool.get_connection()
+            cursor = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+            
+            # Primero obtenemos los IDs de libros que pertenecen al género
+            cursor.execute("""
+                SELECT libro_id FROM libro_genero WHERE genero_id = %s
+            """, (genero_id,))
+            libro_ids = [row['libro_id'] for row in cursor.fetchall()]
+            
+            if not libro_ids:
+                return []
+            
+            # Construir la consulta IN de forma segura
+            placeholders = ','.join(['%s'] * len(libro_ids))
+            query = f"""
+                SELECT * FROM libro 
+                WHERE id IN ({placeholders})
+                ORDER BY titulo
+            """
+            
+            cursor.execute(query, libro_ids)
+            libros = cursor.fetchall()
+            
+            # Para cada libro, obtener sus autores y géneros
+            for libro in libros:
+                # Fetch autores
+                cursor.execute("""
+                    SELECT a.* FROM autor a
+                    JOIN libro_autor la ON a.id = la.autor_id
+                    WHERE la.libro_id = %s
+                """, (libro['id'],))
+                libro['autores'] = cursor.fetchall()
+                
+                # Fetch generos
+                cursor.execute("""
+                    SELECT g.* FROM genero g
+                    JOIN libro_genero lg ON g.id = lg.genero_id
+                    WHERE lg.libro_id = %s
+                """, (libro['id'],))
+                libro['generos'] = cursor.fetchall()
+            
+            return libros
+        except Exception as e:
+            print(f"Error getting books by genre: {e}")
+            return []
+        finally:
+            if cursor:
+                cursor.close()
+            if conn and pool:
+                pool.release_connection(conn)
+
+    @staticmethod
+    def get_by_autor(autor_id):
+        """
+        Obtiene todos los libros de un autor específico
+        """
+        pool = None
+        conn = None
+        cursor = None
+        
+        try:
+            pool = PostgreSQLConnectionPool.get_instance()
+            conn = pool.get_connection()
+            cursor = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+            
+            # Primero obtenemos los IDs de libros que pertenecen al autor
+            cursor.execute("""
+                SELECT libro_id FROM libro_autor WHERE autor_id = %s
+            """, (autor_id,))
+            libro_ids = [row['libro_id'] for row in cursor.fetchall()]
+            
+            if not libro_ids:
+                return []
+            
+            # Construir la consulta IN de forma segura
+            placeholders = ','.join(['%s'] * len(libro_ids))
+            query = f"""
+                SELECT * FROM libro 
+                WHERE id IN ({placeholders})
+                ORDER BY titulo
+            """
+            
+            cursor.execute(query, libro_ids)
+            libros = cursor.fetchall()
+            
+            # Para cada libro, obtener sus autores y géneros
+            for libro in libros:
+                # Fetch autores
+                cursor.execute("""
+                    SELECT a.* FROM autor a
+                    JOIN libro_autor la ON a.id = la.autor_id
+                    WHERE la.libro_id = %s
+                """, (libro['id'],))
+                libro['autores'] = cursor.fetchall()
+                
+                # Fetch generos
+                cursor.execute("""
+                    SELECT g.* FROM genero g
+                    JOIN libro_genero lg ON g.id = lg.genero_id
+                    WHERE lg.libro_id = %s
+                """, (libro['id'],))
+                libro['generos'] = cursor.fetchall()
+            
+            return libros
+        except Exception as e:
+            print(f"Error getting books by author: {e}")
+            return []
+        finally:
+            if cursor:
+                cursor.close()
+            if conn and pool:
+                pool.release_connection(conn)

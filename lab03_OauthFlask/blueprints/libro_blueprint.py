@@ -173,3 +173,32 @@ def remove_genero_from_libro(libro_id, genero_id):
         return jsonify({"error": "Error al eliminar género del libro"}), 500
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+
+@libro_bp.route('/por-genero/<int:genero_id>', methods=['GET'])
+@token_required
+def get_libros_por_genero(genero_id):
+    """
+    Obtiene todos los libros de un género específico
+    """
+    try:
+        libros = Libro.get_by_genero(genero_id)
+        if libros:
+            return jsonify(libros), 200
+        return jsonify({"message": "No se encontraron libros para este género"}), 404
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@libro_bp.route('/por-autor/<int:autor_id>', methods=['GET'])
+@token_required
+def get_libros_por_autor(autor_id):
+    """
+    Obtiene todos los libros de un autor específico
+    """
+    try:
+        libros = Libro.get_by_autor(autor_id)
+        if libros:
+            return jsonify(libros), 200
+        return jsonify({"message": "No se encontraron libros para este autor"}), 404
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
